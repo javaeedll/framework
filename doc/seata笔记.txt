@@ -1,0 +1,70 @@
+1.安装nacos,配置高可用
+  执行sql脚本，修改DB配置
+----------------------------------------------------------------------------------------------------------------------------------------
+spring.datasource.platform=mysql
+
+### Count of DB:
+db.num=1
+
+### Connect URL of DB:
+db.url.0=jdbc:mysql://192.168.99.100:3306/nacos_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true
+db.user=root
+db.password=123456
+----------------------------------------------------------------------------------------------------------------------------------------
+
+2.安装seata server 配置高可用DB模式
+执行sql脚本，修改DB配置（config.txt）,执行 sh nacos-config.sh localhost 命令
+----------------------------------------------------------------------------------------------------------------------------------------
+service.vgroupMapping.my_test_tx_group=default
+store.mode=db
+store.db.datasource=druid
+store.db.dbType=mysql
+store.db.driverClassName=com.mysql.jdbc.Driver
+store.db.url=jdbc:mysql://127.0.0.1:3306/seata?useUnicode=true
+store.db.user=username
+store.db.password=password
+store.db.minConn=5
+store.db.maxConn=30
+store.db.globalTable=global_table
+store.db.branchTable=branch_table
+store.db.queryLimit=100
+store.db.lockTable=lock_table
+store.db.maxWait=5000
+
+----------------------------------------------------------------------------------------------------------------------------------------
+3.项目集成seata
+
+添加依赖(dubbo)
+----------------------------------------------------------------------------------------------------------------------------------------
+           <dependency>
+               <groupId>io.seata</groupId>
+               <artifactId>seata-spring-boot-starter</artifactId>
+               <version>1.2.0</version>
+           </dependency>
+----------------------------------------------------------------------------------------------------------------------------------------
+
+seata配置
+----------------------------------------------------------------------------------------------------------------------------------------
+seata:
+  enabled: true
+  application-id: demo
+  tx-service-group: my_test_tx_group
+  enable-auto-data-source-proxy: true
+  config:
+    type: nacos
+    nacos:
+      namespace:
+      serverAddr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      userName: "nacos"
+      password: "nacos"
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 127.0.0.1:8848
+      namespace:
+      userName: "nacos"
+      password: "nacos"
+----------------------------------------------------------------------------------------------------------------------------------------
+
