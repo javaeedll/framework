@@ -53,7 +53,6 @@ store.db.maxWait=5000
             <artifactId>dubbo</artifactId>
             <version>2.6.7</version>
         </dependency>
-
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
